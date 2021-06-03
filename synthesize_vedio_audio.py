@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+# @Author : Phenix-G
+# @File   : synthesize_vedio_audio.py
+# @Time   : 2021/06/04 0:09
 from datetime import datetime
 import ffmpeg
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve()
-mp4_dir = BASE_DIR.joinpath("mysql")
-output_dir = BASE_DIR.joinpath("output")
-# output_dir.mkdir(exist_ok=True)
+BASE_DIR = Path(__file__).resolve().parent
+mp4_dir = BASE_DIR.joinpath("fastapi_mp4")
+output_dir = BASE_DIR.joinpath("output_fastapi")
+output_dir.mkdir(exist_ok=True)
 
 
 def filter_xml(filename):
@@ -40,6 +44,7 @@ def video_audio_input(all_video, all_audio):
 def set_filename(file):
     filename = file.name.split(".")
     filename = [
+        filename[0][-2:],
         filename[-2].strip()[:-5],
         datetime.now().strftime("%H%M%S"),
         filename[-1],
@@ -52,7 +57,7 @@ def merge(video, audio, all_mp4_list):
     episode_audio_list = list(filter(audio, all_mp4_list()))
 
     for video, audio in video_audio_input(
-        episode_video_list, episode_audio_list
+            episode_video_list, episode_audio_list
     ):
         input_video = ffmpeg.input(video)
         input_audio = ffmpeg.input(audio)
@@ -61,5 +66,11 @@ def merge(video, audio, all_mp4_list):
         ).run()
 
 
-# merge(get_video, get_audio, get_mp4_list)
-print(BASE_DIR)
+merge(get_video, get_audio, get_mp4_list)
+print('''
+============================
+|                          |
+|           done           |
+|                          |
+============================
+''')
